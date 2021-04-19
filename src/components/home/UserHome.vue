@@ -44,25 +44,44 @@
           </div>
           <img :src="post.image" class="post_image" v-if="post.image" />
           <div style="padding: 14px">
-            <i
-              class="material-icons favorite-button"
-              @click="handleLike(post.id)"
-              v-if="!post.hasBeenLiked"
-              >favorite_border</i
-            >
-            <i
-              class="material-icons favorite-button button-liked"
-              @click="handleLike(post.id)"
-              v-else
-              >favorite</i
-            >
-
-            <p class="post-like">{{ post.like }}</p>
-
-            <h3 style="clear: left">{{ post.description }}</h3>
+            <div class="post-action">
+              <i
+                class="material-icons favorite-button"
+                @click="handleLike(post.id)"
+                v-if="!post.hasBeenLiked"
+                >favorite_border</i
+              >
+              <i
+                class="material-icons favorite-button button-liked"
+                @click="handleLike(post.id)"
+                v-else
+                >favorite</i
+              >
+              <router-link
+                :to="{ name: 'PostDetail', params: { postId: post.id } }"
+              >
+                <i class="el-icon-chat-round comment-button"></i>
+              </router-link>
+            </div>
+            <p class="post-like" v-if="post.like && post.like <= 1">
+              {{ post.like }} Like
+            </p>
+            <p class="post-like" v-if="post.like && post.like > 1">
+              {{ post.like }} Likes
+            </p>
+            <h3 style="clear: left" class="post-description">
+              {{ post.description }}
+            </h3>
           </div>
         </el-card>
       </div>
+    </div>
+    <div
+      class="new-post-button-float-container"
+      v-if="isScroll"
+      @click="openForm"
+    >
+      <p class="new-post-button-float">New post</p>
     </div>
   </div>
 </template>
@@ -82,6 +101,7 @@ export default {
       posts: [],
       currentUserId: null,
       isSort: false,
+      isScroll: false,
     };
   },
   methods: {
@@ -91,6 +111,9 @@ export default {
     handleEvent(event, data) {
       if (event === "closeFormNewPost") {
         this.showNewPost = false;
+        this.posts.sort((a, b) => {
+          return b.timestamp - a.timestamp;
+        });
       }
     },
     handleLike(postId) {
@@ -133,6 +156,13 @@ export default {
         this.posts.sort((a, b) => {
           return b.timestamp - a.timestamp;
         });
+      }
+    },
+    handleScroll() {
+      if (window.top.scrollY > 200 && window.innerWidth > 970) {
+        this.isScroll = true;
+      } else {
+        this.isScroll = false;
       }
     },
   },
@@ -195,12 +225,39 @@ export default {
       }
     });
   },
+  created() {
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  destroyed() {
+    window.removeEventListener("scroll", this.handleScroll);
+  },
 };
 </script>
 <style scoped>
+.new-post-button-float-container {
+  bottom: 50px;
+  right: 30px;
+  background-color: #3f51b5;
+  z-index: 1;
+  position: fixed;
+  width: 120px;
+  text-align: center;
+  height: 40px;
+  border-radius: 40px;
+  cursor: pointer;
+}
+.new-post-button-float {
+  font-size: 20px;
+  margin: 5px;
+  font-weight: bold;
+  color: white;
+}
+.post-description {
+  font-size: 20px;
+}
 .home-user {
   margin: 2em auto;
-  width: 90%;
+  width: 40%;
   max-width: 1280px;
 }
 .create_post_button {
@@ -240,15 +297,25 @@ export default {
   color: #707070;
 }
 .favorite-button {
-  float: left;
+  display: inline-block;
+  vertical-align: middle;
   color: black;
-  font-size: 50px;
+  font-size: 35px;
   cursor: pointer;
 }
 .post-like {
-  float: left;
-  font-size: 35px;
-  margin: 0 5px;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 10px 5px 0px 5px;
+}
+.comment-button {
+  display: inline-block;
+  color: black;
+  margin-left: 20px;
+  font-size: 30px;
+  font-weight: bold;
+  vertical-align: middle;
 }
 .button-liked {
   color: #3f51b5;
@@ -260,5 +327,12 @@ export default {
 }
 .toggle-sort-button:hover {
   background-color: #b3b3b3;
+}
+@media only screen and (max-width: 970px) {
+  .home-user {
+    margin: 2em auto;
+    width: 90%;
+    max-width: 1280px;
+  }
 }
 </style>

@@ -37,12 +37,20 @@
         >
           <i class="el-icon-picture photo-uploader-icon"></i>
         </el-upload>
-        <img
-          v-if="showImage"
-          class="preview-image"
-          :src="srcImage"
-          @click="handleChangeImage"
-        />
+        <div class="preview-image-container">
+          <img
+            v-if="showImage"
+            class="preview-image"
+            :src="srcImage"
+            @click="handleChangeImage"
+          >
+          <i
+            v-if="showImage"
+            @click="handleChangeImage"
+            class="material-icons preview-image-close"
+            >close</i
+          >
+        </div>
       </el-form-item>
 
       <div class="form-footer">
@@ -83,7 +91,10 @@ export default {
   },
   methods: {
     handleChangeImage() {
-      this.$refs.fileInput.click();
+      this.srcImage = null;
+      this.newPostForm.file = null;
+      this.selectedPicture = false;
+      this.showImage = false;
     },
     handlePreview(file) {
       const aceptableType = ["image/jpeg", "image/jpg", "image/png"];
@@ -228,6 +239,16 @@ export default {
 <style scoped>
 .new-post-container .el-form .el-form-item .new-post-form-input-file.hidden {
   display: block;
+}
+.preview-image-container {
+  position: relative;
+}
+.preview-image-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 35px;
+  font-weight: bold;
 }
 .new-post-container {
   width: 100%;

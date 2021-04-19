@@ -273,6 +273,7 @@ export default {
 }
 .post-detail {
   margin: 1em auto 2em auto;
+  width: 40%;
 }
 .post-comment-list {
   padding: 0px 10px 10px 10px;
@@ -355,7 +356,11 @@ export default {
 .button-liked {
   color: #3f51b5;
 }
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 800px) {
+  .post-detail {
+    margin: 1em auto 2em auto;
+    width: 90%;
+  }
   .post-comment-list {
     padding: 0px 10px 10px 10px;
   }

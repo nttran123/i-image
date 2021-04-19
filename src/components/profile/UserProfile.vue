@@ -252,6 +252,7 @@ export default {
   position: relative;
   margin-top: 1em;
   margin-bottom: 2em;
+  width: 40%;
 }
 .user-wallpaper {
   display: block;
