@@ -43,7 +43,7 @@
             class="preview-image"
             :src="srcImage"
             @click="handleChangeImage"
-          >
+          />
           <i
             v-if="showImage"
             @click="handleChangeImage"
@@ -249,6 +249,7 @@ export default {
   right: 20px;
   font-size: 35px;
   font-weight: bold;
+  cursor: pointer;
 }
 .new-post-container {
   width: 100%;

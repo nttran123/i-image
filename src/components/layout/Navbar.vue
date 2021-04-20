@@ -146,7 +146,7 @@ export default {
   cursor: pointer;
 }
 .user-avatar {
-  border: 5px solid rgb(218, 218, 218);
+  border: 2px solid rgb(218, 218, 218);
 }
 .username {
   color: black;

@@ -62,26 +62,45 @@
             </div>
             <img :src="post.image" class="post_image" />
             <div style="padding: 14px">
-              <i
-                class="material-icons favorite-button"
-                @click="handleLike(post.id)"
-                v-if="!post.hasBeenLiked"
-                >favorite_border</i
-              >
-              <i
-                class="material-icons favorite-button button-liked"
-                @click="handleLike(post.id)"
-                v-else
-                >favorite</i
-              >
-
-              <p class="post-like">{{ post.like }}</p>
-
-              <h3 style="clear: left">{{ post.description }}</h3>
+              <div class="post-action">
+                <i
+                  class="material-icons favorite-button"
+                  @click="handleLike(post.id)"
+                  v-if="!post.hasBeenLiked"
+                  >favorite_border</i
+                >
+                <i
+                  class="material-icons favorite-button button-liked"
+                  @click="handleLike(post.id)"
+                  v-else
+                  >favorite</i
+                >
+                <router-link
+                  :to="{ name: 'PostDetail', params: { postId: post.id } }"
+                >
+                  <i class="el-icon-chat-round comment-button"></i>
+                </router-link>
+              </div>
+              <p class="post-like" v-if="post.like && post.like <= 1">
+                {{ post.like }} Like
+              </p>
+              <p class="post-like" v-if="post.like && post.like > 1">
+                {{ post.like }} Likes
+              </p>
+              <h3 style="clear: left" class="post-description">
+                {{ post.description }}
+              </h3>
             </div>
           </el-card>
         </div>
       </div>
+    </div>
+    <div
+      class="new-post-button-float-container"
+      v-if="isScroll"
+      @click="openForm"
+    >
+      <p class="new-post-button-float">New post</p>
     </div>
   </div>
 </template>
@@ -99,6 +118,7 @@ export default {
   },
   data() {
     return {
+      isScroll: false,
       profile: null,
       isLoggedUser: false,
       showNewPost: false,
@@ -158,6 +178,13 @@ export default {
         });
       }
     },
+    handleScroll() {
+      if (window.top.scrollY > 200 && window.innerWidth > 970) {
+        this.isScroll = true;
+      } else {
+        this.isScroll = false;
+      }
+    },
   },
   beforeCreate() {
     //check if this current user's profile
@@ -174,6 +201,7 @@ export default {
     });
   },
   created() {
+    window.addEventListener("scroll", this.handleScroll);
     //get posts of this user(if exists)
     let userPost = db
       .collection("posts")
@@ -238,11 +266,35 @@ export default {
       }
     });
   },
+  destroyed() {
+    window.removeEventListener("scroll", this.handleScroll);
+  },
 };
 </script>
 
 
 <style scoped>
+.new-post-button-float-container {
+  bottom: 50px;
+  right: 30px;
+  background-color: #3f51b5;
+  z-index: 1;
+  position: fixed;
+  width: 120px;
+  text-align: center;
+  height: 40px;
+  border-radius: 40px;
+  cursor: pointer;
+}
+.new-post-button-float {
+  font-size: 20px;
+  margin: 5px;
+  font-weight: bold;
+  color: white;
+}
+.post-description {
+  font-size: 20px;
+}
 .album {
   width: 95%;
   margin: 1em auto;
@@ -260,13 +312,13 @@ export default {
   height: 150px;
 }
 .profile-ava {
-  border: 5px solid rgb(218, 218, 218);
+  border: 2px solid rgb(218, 218, 218);
   border-radius: 50%;
   display: block;
-  width: 13em;
-  height: 13em;
+  width: 10em;
+  height: 10em;
   position: absolute;
-  margin: -115px 0 auto 1em;
+  margin: -75px 0 auto 1em;
 }
 .profile_information {
   background-color: white;
@@ -275,9 +327,9 @@ export default {
 }
 .profile-name {
   color: rgb(39, 21, 21);
-  font-size: 2.5em;
+  font-size: 30px;
   font-weight: 600;
-  margin: 0 0 0 6.5em;
+  margin: 0 0 0 6em;
   text-shadow: -2px -2px #f3f3f3, -2px -1.5px #f3f3f3, -2px -1px #f3f3f3,
     -2px -0.5px #f3f3f3, -2px 0px #f3f3f3, -2px 0.5px #f3f3f3, -2px 1px #f3f3f3,
     -2px 1.5px #f3f3f3, -2px 2px #f3f3f3, -1.5px 2px #f3f3f3, -1px 2px #f3f3f3,
@@ -313,7 +365,7 @@ export default {
   padding: 10px;
 }
 .user-avatar {
-  border: 5px solid rgb(218, 218, 218);
+  border: 2px solid rgb(218, 218, 218);
   border-radius: 50%;
   float: left;
   width: 5em;
@@ -326,7 +378,7 @@ export default {
 .user-name {
   color: black;
   margin: 3px 0;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: bold;
 }
 .post-time {
@@ -334,15 +386,25 @@ export default {
   color: #707070;
 }
 .favorite-button {
-  float: left;
+  display: inline-block;
+  vertical-align: middle;
   color: black;
-  font-size: 50px;
+  font-size: 35px;
   cursor: pointer;
 }
+.comment-button {
+  display: inline-block;
+  color: black;
+  margin-left: 20px;
+  font-size: 30px;
+  font-weight: bold;
+  vertical-align: middle;
+}
 .post-like {
-  float: left;
-  font-size: 35px;
-  margin: 0 5px;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 10px 5px 0px 5px;
 }
 .button-liked {
   color: #3f51b5;
@@ -355,11 +417,29 @@ export default {
 .toggle-sort-button:hover {
   background-color: #b3b3b3;
 }
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 700px) {
+  .profile {
+    box-shadow: 0px 0px 20px grey;
+    position: relative;
+    margin-top: 1em;
+    margin-bottom: 2em;
+    width: 90%;
+  }
+  .post-description {
+    font-size: 20px;
+  }
   .profile_information {
     background-color: white;
     height: 60px;
     margin-bottom: 10px;
+  }
+  .comment-button {
+    display: inline-block;
+    color: black;
+    margin-left: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    vertical-align: middle;
   }
   .create_post_button {
     margin: 5px;
@@ -374,7 +454,7 @@ export default {
     height: 80px;
   }
   .profile-ava {
-    border: 5px solid rgb(218, 218, 218);
+    border: 2px solid rgb(218, 218, 218);
     border-radius: 50%;
     display: block;
     width: 7em;

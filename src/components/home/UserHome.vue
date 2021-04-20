@@ -276,7 +276,7 @@ export default {
   padding: 10px;
 }
 .user-avatar {
-  border: 5px solid rgb(218, 218, 218);
+  border: 2px solid rgb(218, 218, 218);
   border-radius: 50%;
   float: left;
   width: 5em;
@@ -289,7 +289,7 @@ export default {
 .user-name {
   color: black;
   margin: 3px 0;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: bold;
 }
 .post-time {

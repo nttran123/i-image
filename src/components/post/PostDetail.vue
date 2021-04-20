@@ -37,20 +37,26 @@
 
         <img :src="post.image" class="post_image" />
         <div style="padding: 14px 14px 0px 14px">
-          <i
-            class="material-icons favorite-button"
-            @click="handleLike(post.id)"
-            v-if="!post.hasBeenLiked"
-            >favorite_border</i
-          >
-          <i
-            class="material-icons favorite-button button-liked"
-            @click="handleLike(post.id)"
-            v-else
-            >favorite</i
-          >
-
-          <p class="post-like">{{ post.like }}</p>
+          <div class="post-action">
+            <i
+              class="material-icons favorite-button"
+              @click="handleLike(post.id)"
+              v-if="!post.hasBeenLiked"
+              >favorite_border</i
+            >
+            <i
+              class="material-icons favorite-button button-liked"
+              @click="handleLike(post.id)"
+              v-else
+              >favorite</i
+            >
+          </div>
+          <p class="post-like" v-if="post.like && post.like <= 1">
+            {{ post.like }} Like
+          </p>
+          <p class="post-like" v-if="post.like && post.like > 1">
+            {{ post.like }} Likes
+          </p>
           <h3 style="clear: left" class="post-description">
             {{ post.description }}
           </h3>
@@ -119,32 +125,26 @@ export default {
   },
   methods: {
     handleLike(postId) {
-      for (let i in this.posts) {
-        if (this.posts[i].id == postId) {
-          if (this.posts[i].hasBeenLiked === false) {
-            this.posts[i].like++; //increse like by 1
-            this.posts[i].hasBeenLiked = true;
-            this.posts[i].likedUsers.push(this.currentUserId);
-            // send to database
-            db.collection("posts").doc(postId).update({
-              like: this.posts[i].like,
-              likedUsers: this.posts[i].likedUsers,
-            });
-          } else {
-            this.posts[i].like--; //decrease like by 1
-            this.posts[i].hasBeenLiked = false;
-            this.posts[i].likedUsers = this.posts[i].likedUsers.filter(
-              (item) => {
-                return item !== this.currentUserId;
-              }
-            );
-            //send to database
-            db.collection("posts").doc(postId).update({
-              like: this.posts[i].like,
-              likedUsers: this.posts[i].likedUsers,
-            });
-          }
-        }
+      if (this.post.hasBeenLiked === false) {
+        this.post.like++; //increse like by 1
+        this.post.hasBeenLiked = true;
+        this.post.likedUsers.push(this.currentUserId);
+        // send to database
+        db.collection("posts").doc(postId).update({
+          like: this.post.like,
+          likedUsers: this.post.likedUsers,
+        });
+      } else {
+        this.post.like--; //decrease like by 1
+        this.post.hasBeenLiked = false;
+        this.post.likedUsers = this.post.likedUsers.filter((item) => {
+          return item !== this.currentUserId;
+        });
+        //send to database
+        db.collection("posts").doc(postId).update({
+          like: this.post.like,
+          likedUsers: this.post.likedUsers,
+        });
       }
     },
     handleCommand(command) {
@@ -279,7 +279,7 @@ export default {
   padding: 0px 10px 10px 10px;
 }
 .current-user-avatar {
-  border: 5px solid rgb(218, 218, 218);
+  border: 2px solid rgb(218, 218, 218);
   border-radius: 50%;
   float: left;
   width: 3em;
@@ -323,7 +323,7 @@ export default {
   padding: 10px;
 }
 .user-avatar {
-  border: 5px solid rgb(218, 218, 218);
+  border: 2px solid rgb(218, 218, 218);
   border-radius: 50%;
   float: left;
   width: 5em;
@@ -336,7 +336,7 @@ export default {
 .user-name {
   color: black;
   margin: 3px 0;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: bold;
 }
 .post-time {
@@ -345,16 +345,21 @@ export default {
 .favorite-button {
   float: left;
   color: black;
-  font-size: 50px;
+  font-size: 35px;
   cursor: pointer;
 }
 .post-like {
-  float: left;
-  font-size: 35px;
-  margin: 0 5px;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 10px 5px 0px 5px;
 }
 .button-liked {
   color: #3f51b5;
+}
+.post-description {
+  font-size: 20px;
+  margin-top: 50px;
 }
 @media only screen and (max-width: 800px) {
   .post-detail {
@@ -365,7 +370,7 @@ export default {
     padding: 0px 10px 10px 10px;
   }
   .current-user-avatar {
-    border: 5px solid rgb(218, 218, 218);
+    border: 2px solid rgb(218, 218, 218);
     border-radius: 50%;
     float: left;
     width: 3em;
@@ -397,7 +402,7 @@ export default {
     padding: 10px;
   }
   .user-avatar {
-    border: 5px solid rgb(218, 218, 218);
+    border: 2px solid rgb(218, 218, 218);
     border-radius: 50%;
     float: left;
     width: 3em;
@@ -425,9 +430,10 @@ export default {
     cursor: pointer;
   }
   .post-like {
-    float: left;
-    font-size: 20px;
-    margin: 0 5px;
+    display: inline-block;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 10px 5px 0px 5px;
   }
   .post-description {
     font-size: 20px;
