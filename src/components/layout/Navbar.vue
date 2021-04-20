@@ -19,8 +19,20 @@
           data-target="mobile-demo"
           class="right hide-on-med-and-down sidenav-trigger"
         >
-          <li>
+          <li v-if="isLoggedIn">
             <a href="#"><i class="material-icons menu-button">menu</i></a>
+          </li>
+        </ul>
+        <ul data-target="mobile-demo" class="right hide-on-med-and-down">
+          <li v-if="!isLoggedIn">
+            <router-link :to="{ name: 'Signup' }">
+              <p class="register-nav">Register</p></router-link
+            >
+          </li>
+          <li v-if="!isLoggedIn">
+            <router-link :to="{ name: 'Login' }">
+              <p class="register-nav">Login</p>
+            </router-link>
           </li>
         </ul>
       </div>
@@ -142,6 +154,12 @@ export default {
 </script>
 
 <style scoped>
+.register-nav {
+  color: #3f51b5;
+  margin: 0;
+  font-size: 15px;
+  font-weight: bold;
+}
 .list-button {
   cursor: pointer;
 }
