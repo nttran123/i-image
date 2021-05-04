@@ -1,5 +1,5 @@
 <template>
-  <div class="post-detail container">
+  <div class="post-detail container" v-if="post.id">
     <div class="card">
       <el-card :body-style="{ padding: '0px' }">
         <div class="post-user-info">
@@ -16,20 +16,23 @@
             </router-link>
             <time class="post-time">{{ post.uploadDate }}</time>
           </div>
-          <el-dropdown
-            class="post-dropdown"
-            v-if="currentUserId === post.user_id"
-            @command="handleCommand"
-          >
+          <el-dropdown class="post-dropdown" @command="handleCommand">
             <span class="el-dropdown-link">
               <i class="el-icon-more more-button"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
+                v-if="currentUserId === post.user_id"
                 icon="el-icon-delete"
                 class="delete-action"
                 command="delete"
                 >Delete post</el-dropdown-item
+              >
+              <el-dropdown-item
+                icon="el-icon-s-flag"
+                class="delete-action"
+                command="report"
+                >Report</el-dropdown-item
               >
             </el-dropdown-menu>
           </el-dropdown>
@@ -83,6 +86,7 @@
             v-bind:comment="comment.comment"
             v-bind:timestamp="comment.timestamp"
             v-bind:currentUserId="currentUserId"
+            v-bind:postAuthor="post.user_id"
           />
         </div>
       </el-card>
@@ -117,6 +121,7 @@ export default {
         userName: null,
         hasBeenLiked: false,
         likedUsers: null,
+        reportCount: null,
       },
       currentUserId: null,
       currentUsername: null,
@@ -181,6 +186,39 @@ export default {
             this.$message({
               type: "info",
               message: "Delete canceled",
+            });
+          });
+      } else if (command === "report") {
+        this.$confirm("Are you sure to report this post?", "Warning", {
+          confirmButtonText: "Yes",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        })
+          .then(() => {
+            this.post.reportCount++; //increse reportCount by 1
+            db.collection("posts")
+              .doc(this.post.id)
+              .update({
+                reportCount: this.post.reportCount,
+              })
+              .then(() => {
+                this.$message({
+                  type: "success",
+                  message: "Reported successfully",
+                });
+              })
+              .catch((error) => {
+                this.$message({
+                  type: "error",
+                  message: "Error: ",
+                  error,
+                });
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "Report canceled",
             });
           });
       }

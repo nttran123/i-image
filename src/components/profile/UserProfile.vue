@@ -97,7 +97,7 @@
     </div>
     <div
       class="new-post-button-float-container"
-      v-if="isScroll"
+      v-if="isScroll && isLoggedUser"
       @click="openForm"
     >
       <p class="new-post-button-float">New post</p>

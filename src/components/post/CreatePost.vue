@@ -163,12 +163,11 @@ export default {
               }
             );
           } else {
-            // Save post
-            this.savePost(
-              this.newPostForm.user_id,
-              this.newPostForm.description,
-              this.newPostForm.file
-            );
+            this.$message({
+              showClose: true,
+              type: "error",
+              message: "Plese choose an image to upload",
+            });
           }
         }
       });
@@ -181,6 +180,7 @@ export default {
           timestamp: Date.now(),
           user_id: user_id,
           like: 0,
+          reportCount: 0,
           likedUsers: [],
         })
         .then(() => {

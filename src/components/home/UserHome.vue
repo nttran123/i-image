@@ -42,7 +42,24 @@
               </router-link>
             </div>
           </div>
-          <img :src="post.image" class="post_image" v-if="post.image" />
+          <router-link
+            :to="{ name: 'PostDetail', params: { postId: post.id } }"
+          >
+            <img
+              :src="post.image"
+              class="post_image"
+              v-if="post.image"
+              :style="[
+                post.reportCount > 1
+                  ? { filter: 'blur(50px)', '-webkit-filter': 'blur(50px)' }
+                  : null,
+              ]"
+            />
+            <p class="post-censor-text" v-if="post.reportCount > 1">
+              This image may be inappropriate for some users. Click if you
+              really want to see it.
+            </p>
+          </router-link>
           <div style="padding: 14px">
             <div class="post-action">
               <i
@@ -206,6 +223,7 @@ export default {
                       title: post.data().title,
                       user_id: post.data().user_id,
                       ava: author.data().avatar,
+                      reportCount: post.data().reportCount,
                       userName: author.data().fullname,
                       hasBeenLiked: checkLike,
                       likedUsers: post.data().likedUsers,
@@ -234,6 +252,18 @@ export default {
 };
 </script>
 <style scoped>
+.post-censor-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-weight: bold;
+  width: 80%;
+  text-align: center;
+  color: black;
+  font-size: 20px;
+}
 .new-post-button-float-container {
   bottom: 50px;
   right: 30px;

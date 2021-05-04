@@ -2,7 +2,7 @@
   <div class="comment">
     <el-dropdown
       class="comment-dropdown"
-      v-if="currentUserId === userId"
+      v-if="currentUserId === userId || currentUserId === postAuthor"
       @command="handleDropdownAction"
     >
       <span class="el-dropdown-link">
@@ -20,7 +20,7 @@
     <img class="user-avatar" :src="userAvatar" />
     <p class="username">{{ username }}</p>
     <time class="comment-time">{{ getTime }}</time>
-    <p class="comment-content">{{ comment }}</p>
+    <p class="comment-content">{{ censorComment }}</p>
   </div>
 </template>
 
@@ -28,6 +28,7 @@
 import db from "@/firebase/init";
 import firebase from "firebase";
 import moment from "moment";
+import { bannedWords } from "@/utils/bannedWord";
 
 export default {
   name: "Comment",
@@ -39,10 +40,12 @@ export default {
     "comment",
     "timestamp",
     "currentUserId",
+    "postAuthor",
   ],
   data() {
     return {
       commentTime: null,
+      banned: bannedWords,
     };
   },
   methods: {
@@ -95,6 +98,15 @@ export default {
   computed: {
     getTime() {
       return (this.commentTime = moment(this.timestamp).format("lll"));
+    },
+    censorComment() {
+      const newComment = [];
+      this.comment.split(" ").forEach((word) => {
+        if (bannedWords.includes(word)) {
+          newComment.push(word.replace(word, "****"));
+        } else newComment.push(word);
+      });
+      return newComment.join(" ");
     },
   },
 };
